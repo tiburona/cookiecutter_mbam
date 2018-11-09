@@ -54,10 +54,10 @@ class XNATConnection:
     def upload_scan(self, xnat_ids, existing_xnat_ids, image_file, import_service=False):
         """
 
-        :param dict xnat_ids:
-        :param dict existing_xnat_ids:
-        :param file image_file:
-        :param bool import_service:
+        :param dict xnat_ids: a dictionary of xnat identifiers and query strings for put urls
+        :param dict existing_xnat_ids: a dictionary of XNAT attributes that already existed on user and experiment
+        :param file image_file: the scan file to upload
+        :param bool import_service: whether to use the XNAT import service. True if file is a .zip, default False.
         :return: three-tuple of the xnat uris for subject, experiment, and scan
         :rtype: tuple
         """

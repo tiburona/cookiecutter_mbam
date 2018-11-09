@@ -2,4 +2,4 @@
 """The user module."""
 from . import views  # noqa
 from .service import *
-from .models import User
+from .models import User, Role

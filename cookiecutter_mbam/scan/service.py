@@ -29,11 +29,12 @@ class ScanService:
         self.experiment = Experiment.get_by_id(exp_id)
         self.xc = XNATConnection()
 
+    # todo: what is the actual URI of the experiment I've created?  Why does it have the XNAT prefix?
     def upload(self, image_file, image_file_name):
         """The top level public method for adding a scan
 
-        Calls methods to infer file type and further process the fiile, generate xnat identifiers and query strings,
-        check what XNAT identifers objects have, upload the scan to XNAT, add the scan to the database, and update
+        Calls methods to infer file type and further process the file, generate xnat identifiers and query strings,
+        check what XNAT identifiers objects have, upload the scan to XNAT, add the scan to the database, and update
         user, experiment, and scan database objects with their XNAT-related attributes.
 
         :param file image_file: the file object
@@ -49,7 +50,6 @@ class ScanService:
         keywords = ['subject', 'experiment', 'scan']
         self._update_database_objects(keywords=keywords, objects=[self.user, self.experiment, scan],
                                      ids=['{}_id'.format(xnat_ids[kw]['xnat_id']) for kw in keywords], uris=uris)
-        # todo: what is the actual URI of the experiment I've created?  Why does it have the XNAT prefix?
 
     def _add_scan(self):
         """Add a scan to the database
@@ -83,13 +83,13 @@ class ScanService:
             import_service = True
         return (image_file, import_service)
 
+    # todo: move this to a utilities module
     def _gzip_file(self, file, file_name):
         """ Gzip a file
         :param file file:
         :param str file_name:
         :return: the gzipped file
         :rtype: gzip file
-        :todo: move this to a utilities module
         """
         with gzip.open(file_name + '.gz', 'wb') as gzipped_file:
             gzipped_file.writelines(file)
@@ -139,6 +139,7 @@ class ScanService:
                                                                        'xnat_experiment_id': self.experiment}.items()}
 
 
+    # todo: the check for existence before reassigning the values is verbose.  Decide whether its important.
     def _update_database_objects(self, objects=[], keywords=[], uris=[], ids=[],):
         """Update database objects
 
@@ -150,7 +151,6 @@ class ScanService:
         :param list uris: xnat uris
         :param list ids: xnat ids
         :return: None
-        :todo: the check for existence before reassigning the values is verbose.  Decide whether its important.
         """
         attributes = zip(objects, keywords, uris, ids)
         for (obj, kw, uri, id) in attributes:

@@ -2,7 +2,7 @@
 """Experiment model."""
 
 from cookiecutter_mbam.extensions import db
-from cookiecutter_mbam.user import User
+from cookiecutter_mbam.user import User, Role
 from sqlalchemy import event
 from cookiecutter_mbam.database import Column, Model, SurrogatePK, db, reference_col, relationship
 
@@ -35,11 +35,10 @@ class Experiment(SurrogatePK, Model):
 #     user_id = target.user_id
 #     print("user id is ", user_id)
 #     user = User.get_by_id(user_id)
-#     user.num_experiments += 1
+#     user.update(num_experiments=user.num_experiments + 1)
 #     print("This is my listener.  user.num experiments is", user.num_experiments)
-#     db.session.add(user)
-#     db.session.commit()
 #
+# #
 # event.listen(Experiment, 'before_insert', update_user_exp_count)
 
 

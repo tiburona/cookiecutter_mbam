@@ -3,7 +3,10 @@
 from flask import Flask, render_template
 
 from cookiecutter_mbam import commands, public, user, experiment, scan
-from cookiecutter_mbam.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate, webpack
+from cookiecutter_mbam.user import User, Role
+from flask_security import SQLAlchemyUserDatastore
+from cookiecutter_mbam.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate, \
+    security, webpack
 
 def create_app(config_object='cookiecutter_mbam.settings'):
     """An application factory, as explained here: http://flask.pocoo.org/docs/patterns/appfactories/.
@@ -26,6 +29,8 @@ def register_extensions(app):
     cache.init_app(app)
     db.init_app(app)
     csrf_protect.init_app(app)
+    user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+    security.init_app(app, datastore=user_datastore)
     login_manager.init_app(app)
     debug_toolbar.init_app(app)
     migrate.init_app(app, db)

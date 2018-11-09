@@ -26,9 +26,6 @@ def home():
     if request.method == 'POST':
         if form.validate_on_submit():
             login_user(form.user)
-            # TODO: delete these comments
-            #import pdb; pdb.set_trace()
-            #session['current_user'] = form.user.id
             flash('You are logged in.', 'success')
             redirect_url = request.args.get('next') or url_for('user.members')
             return redirect(redirect_url)
