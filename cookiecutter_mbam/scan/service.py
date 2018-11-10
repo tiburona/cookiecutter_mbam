@@ -13,7 +13,7 @@ from cookiecutter_mbam.experiment import Experiment
 from cookiecutter_mbam.user import User
 from .models import Scan
 import os
-import gzip
+from .utils import gzip_file
 
 from flask import current_app
 
@@ -78,22 +78,10 @@ class ScanService:
         file_name, file_ext = os.path.splitext(image_file_name)
         import_service = False
         if file_ext == '.nii':
-            image_file = (self._gzip_file(image_file, file_name))
+            image_file = (gzip_file(image_file, file_name))
         if file_ext == '.zip':
             import_service = True
         return (image_file, import_service)
-
-    # todo: move this to a utilities module
-    def _gzip_file(self, file, file_name):
-        """ Gzip a file
-        :param file file:
-        :param str file_name:
-        :return: the gzipped file
-        :rtype: gzip file
-        """
-        with gzip.open(file_name + '.gz', 'wb') as gzipped_file:
-            gzipped_file.writelines(file)
-        return gzipped_file
 
     def _generate_xnat_identifiers(self):
         """Generate object ids for use in XNAT

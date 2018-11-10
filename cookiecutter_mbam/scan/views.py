@@ -20,7 +20,7 @@ def add():
     """Add a scan."""
     form = ScanForm()
     if form.validate_on_submit():
-        f = form.scan_file.data
+        f = form.scan_file.data.read()
         # todo: something here that captures the file name
         f_name = ''
         user_id = str(current_user.get_id())

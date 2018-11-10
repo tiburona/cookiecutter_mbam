@@ -19,7 +19,9 @@ class Experiment(SurrogatePK, Model):
     scanner = Column(db.String(80), nullable=True)
     num_scans = Column(db.Integer(), nullable=True, default=0)
     xnat_experiment_id = Column(db.String(80), nullable=True)
+    #user = relationship('User', backref='experiments')
     user_id = reference_col('users', nullable=True)
+
 
     def __init__(self, date, scanner, num_scans, user_id, **kwargs):
         """Create instance."""
@@ -29,7 +31,7 @@ class Experiment(SurrogatePK, Model):
         """Represent instance as a unique string."""
         return '<Experiment({date})>'.format(date=self.date)
 
-
+#
 # def update_user_exp_count(mapper, connection, target):
 #     db.session.begin_nested()
 #     user_id = target.user_id

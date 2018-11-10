@@ -41,9 +41,8 @@ class User(UserMixin, SurrogatePK, Model):
     active = Column(db.Boolean(), default=False)
     is_admin = Column(db.Boolean(), default=False)
     xnat_subject_id = Column(db.String(80), nullable=True)
+    experiments = relationship('Experiment', backref='users')
     num_experiments = Column(db.Integer(), default=0)
-
-    experiments = relationship('Experiment', backref='user', lazy='dynamic')
 
     def __init__(self, username, email, password=None, **kwargs):
         """Create instance."""
@@ -70,8 +69,8 @@ class User(UserMixin, SurrogatePK, Model):
         """Represent instance as a unique string."""
         return '<User({username!r})>'.format(username=self.username)
 
-#
-# @event.listens_for(User.experiments, 'append')
-# def receive_append(target, value, initiator):
-#     print("I was executed")
-#     target.num_experiments += 1
+
+@event.listens_for(User.experiments, 'append')
+def receive_append(target, value, initiator):
+    print("I was executed")
+    target.num_experiments += 1
