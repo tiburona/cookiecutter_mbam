@@ -20,12 +20,10 @@ def add():
     """Add a scan."""
     form = ScanForm()
     if form.validate_on_submit():
-        f = form.scan_file.data.read()
-        # todo: something here that captures the file name
-        f_name = ''
+        f = form.scan_file.data
         user_id = str(current_user.get_id())
         exp_id = str(session['curr_experiment'])
-        ScanService(user_id, exp_id).upload(f, f_name)
+        ScanService(user_id, exp_id).upload(f)
         flash('You successfully added a new scan.', 'success')
         return redirect(url_for('experiment.experiments'))
     else:

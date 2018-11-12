@@ -3,20 +3,23 @@
 
 This module implements uploading a scan file to XNAT and adding a scan to the database.
 
-:Todo: Maybe the public method should be called add, and that should kick off an upload procedure, rather than the
+Todo: Maybe the public method should be called add, and that should kick off an upload procedure, rather than the
 other way around.
 
-"""
+Todo: do we want to infer file type from extension?  Or use some other method?
 
+Todo: Right now if we use the import service XNAT is inferring its own scan id.  What do we want to do about that?
+
+
+"""
+import os
 from cookiecutter_mbam.xnat import XNATConnection
 from cookiecutter_mbam.experiment import Experiment
 from cookiecutter_mbam.user import User
 from .models import Scan
-import os
 from .utils import gzip_file
 
 from flask import current_app
-
 def debug():
     assert current_app.debug == False, "Don't panic! You're here by request of debug()"
 
@@ -30,22 +33,22 @@ class ScanService:
         self.xc = XNATConnection()
 
     # todo: what is the actual URI of the experiment I've created?  Why does it have the XNAT prefix?
-    def upload(self, image_file, image_file_name):
+    # maybe that's the accessor?  Is the accessor in the URI?
+    def upload(self, image_file):
         """The top level public method for adding a scan
 
         Calls methods to infer file type and further process the file, generate xnat identifiers and query strings,
         check what XNAT identifiers objects have, upload the scan to XNAT, add the scan to the database, and update
         user, experiment, and scan database objects with their XNAT-related attributes.
 
-        :param file image_file: the file object
-        :param str image_file_name: the file name
+        :param file object image_file: the file object
         :return: None
 
         """
-        file, import_service = self._process_file(image_file, image_file_name)
-        xnat_ids = self._generate_xnat_identifiers()
+        file, dcm = self._process_file(image_file)
+        xnat_ids = self._generate_xnat_identifiers(dcm=dcm)
         existing_attributes = self._check_for_existing_xnat_ids()
-        uris = self.xc.upload_scan(xnat_ids, existing_attributes, image_file, import_service=import_service)
+        uris = self.xc.upload_scan(xnat_ids, existing_attributes, image_file, import_service=dcm)
         scan = self._add_scan()
         keywords = ['subject', 'experiment', 'scan']
         self._update_database_objects(keywords=keywords, objects=[self.user, self.experiment, scan],
@@ -62,28 +65,28 @@ class ScanService:
         return scan
 
 
-    def _process_file(self, image_file, image_file_name):
+    def _process_file(self, image_file):
         """Infer file type from extension and respond to file type as necessary
 
         Uses file extension to infer whether file should be left alone or gzipped, or whether zip file will be sent to
-        import service. A private method not designed to be accessed by other classes.
+        import service.
 
-        :param file image_file: the file object
-        :param str image_file_name: the file name
-        :return: a two-tuple of the image file (either .gz or .zip) and a boolean indicating whether to invoke the
-        import service
+        :param file object image_file: the file object
+        :return: a two-tuple of the image file, and a boolean indicating the file type is dcm
         :rtype: tuple
 
         """
+        print("hello", type(image_file))
+        image_file_name = image_file.filename
         file_name, file_ext = os.path.splitext(image_file_name)
-        import_service = False
+        dcm = False
         if file_ext == '.nii':
             image_file = (gzip_file(image_file, file_name))
         if file_ext == '.zip':
-            import_service = True
-        return (image_file, import_service)
+            dcm = True
+        return (image_file, dcm)
 
-    def _generate_xnat_identifiers(self):
+    def _generate_xnat_identifiers(self, dcm=False):
         """Generate object ids for use in XNAT
 
         Creates a dictionary with keys for type of XNAT object, including subject, experiment, scan, resource and file.
@@ -98,16 +101,19 @@ class ScanService:
 
         xnat_ids['subject'] = {'xnat_id': str(self.user_id).zfill(6)}
 
-
         xnat_exp_id = '{}_MR{}'.format(xnat_ids['subject']['xnat_id'], self.user.num_experiments)
         exp_date = self.experiment.date.strftime('%m/%d/%Y')
         xnat_ids['experiment'] = {'xnat_id': xnat_exp_id, 'query_string':'?xnat:mrSessionData/date={}'.format(exp_date)}
 
         scan_number = self.experiment.num_scans + 1
         xnat_scan_id = 'T1_{}'.format(scan_number)
-        xnat_ids['scan'] = {'xnat_id':xnat_scan_id, 'query_string':'?xsiType=xnat:mrScanData'}  # Todo: This needs to be made dynamic bc there can be more than one T1
+        xnat_ids['scan'] = {'xnat_id':xnat_scan_id, 'query_string':'?xsiType=xnat:mrScanData'}
 
-        xnat_ids['resource'] = {'xnat_id':'NIFTI'} # Todo: obv. needs to be made dynamic
+        if dcm:
+            resource = 'DICOM'
+        else:
+            resource = 'NIFTI'
+        xnat_ids['resource'] = {'xnat_id': resource}
 
         xnat_ids['file'] = {'xnat_id':'T1.nii.gz', 'query_string':'?xsi:type=xnat:mrScanData'}
 

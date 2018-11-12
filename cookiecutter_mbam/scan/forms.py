@@ -11,7 +11,7 @@ def debug():
 
 
 class ScanForm(FlaskForm):
-    scan_file = FileField(validators=[FileAllowed(['gz', 'nii.gz', 'zip']), FileRequired()])
+    scan_file = FileField(validators=[FileAllowed(['nii', 'nii.gz', 'zip']), FileRequired()])
 
 
 
