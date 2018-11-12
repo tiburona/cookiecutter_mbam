@@ -42,7 +42,7 @@ class XNATConnection:
     def xnat_put(self, url='', file=None, imp=False, **kwargs):
         """ The method to create an XNAT object
 
-        This method uses the xnatpy session.put, session.upload, or session.services.import_ to add an object to XNAT.
+        Uses the xnatpy session.put, session.upload, or session.services.import_ to add an object to XNAT.
 
         :param str url: a put route in the XNAT URI
         :param file object file: a file object to upload
@@ -79,10 +79,10 @@ class XNATConnection:
     def upload_scan(self, xnat_ids, existing_xnat_ids, image_file, import_service=False):
         """The method to upload a scan to XNAT
 
-        Iteratively construct the uris for subject and experiment (if they do not exist).  Construct the uris for scan,
-        resource, and file (if not using the import service).  Call xnat_put on the generated uris to create objects if
-        they do not exist.  Call xnat_put with a file to upload it, invoking the import service if it is a zip file.
-        Return uris for subject, experiment, and scan so they can be attached to their database objects.
+        Iteratively constructs the uris for subject and experiment (if they do not exist).  Constructs the uris for scan,
+        resource, and file (if not using the import service).  Calls xnat_put on the generated uris to create objects if
+        they do not exist.  Calls xnat_put with a file to upload it, invoking the import service if it is a zip file.
+        Returns uris for subject, experiment, and scan so they can be attached to their database objects.
 
         :param dict xnat_ids: a dictionary of xnat identifiers and query strings for put urls
         :param dict existing_xnat_ids: a dictionary of XNAT attributes that already existed on user and experiment
@@ -133,7 +133,6 @@ class XNATConnection:
             uris['scan'] = 'hello'
 
         return (uris['subject'], uris['experiment'], uris['scan'])
-
 
 
 
