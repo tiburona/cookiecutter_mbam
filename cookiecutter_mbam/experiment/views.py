@@ -5,7 +5,6 @@ from flask_login import current_user
 from .models import Experiment
 from .forms import ExperimentForm
 from .service import ExperimentService
-from cookiecutter_mbam.user import User
 from cookiecutter_mbam.utils import flash_errors
 
 blueprint = Blueprint('experiment', __name__, url_prefix='/experiments', static_folder='../static')
@@ -18,7 +17,7 @@ def experiments():
 
 @blueprint.route('/add', methods=['GET', 'POST'])
 def add():
-    """Add a experiment."""
+    """Add an experiment."""
     form = ExperimentForm(request.form)
     if form.validate_on_submit():
         exp = ExperimentService().add(date=form.date.data, scanner=form.scanner.data, num_scans=form.num_scans.data,
@@ -32,4 +31,5 @@ def add():
 
 @blueprint.route('/<id>', methods=['GET'])
 def single_experiment(id):
+    """Display a single experiment"""
     return render_template('experiments/experiment.html', id=id)

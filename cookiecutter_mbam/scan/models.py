@@ -11,7 +11,7 @@ class Scan(SurrogatePK, Model):
     __tablename__ = 'scan'
     xnat_uri = db.Column(db.String(255))
     experiment_id = reference_col('experiments', nullable=True)
-    experiment = relationship('Experiment', backref='scan')
+    experiment = relationship('Experiment', backref='scans')
 
     def __init__(self, experiment_id, **kwargs):
         """Create instance."""

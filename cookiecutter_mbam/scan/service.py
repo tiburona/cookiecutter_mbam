@@ -10,6 +10,11 @@ Todo: do we want to infer file type from extension?  Or use some other method?
 
 Todo: Right now if we use the import service XNAT is inferring its own scan id.  What do we want to do about that?
 
+Todo: if someone uploads a zip file we don't actually know that there are dicoms inside (could be NIFTI).  Consider this
+fact.
+
+Todo: Upload security for zip files?
+
 
 """
 import os
@@ -76,7 +81,6 @@ class ScanService:
         :rtype: tuple
 
         """
-        print("hello", type(image_file))
         image_file_name = image_file.filename
         file_name, file_ext = os.path.splitext(image_file_name)
         dcm = False
@@ -92,7 +96,7 @@ class ScanService:
         Creates a dictionary with keys for type of XNAT object, including subject, experiment, scan, resource and file.
         The values in the dictionary are dictionaries with keys 'xnat_id' and, optionally, 'query_string'.  'xnat_id'
         points to the identifier of the object in XNAT, and 'query_string' to the query that will be used in the put
-        request to create the object. A private method not designed to be accessed by other classes.
+        request to create the object.
 
         :return: xnat_id dictionary
         :rtype: dict

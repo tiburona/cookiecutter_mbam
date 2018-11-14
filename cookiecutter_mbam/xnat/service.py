@@ -85,7 +85,7 @@ class XNATConnection:
         Returns uris for subject, experiment, and scan so they can be attached to their database objects.
 
         :param dict xnat_ids: a dictionary of xnat identifiers and query strings for put urls
-        :param dict existing_xnat_ids: a dictionary of XNAT attributes that already existed on user and experiment
+        :param dict existing_xnat_ids: a dictionary of XNAT identifiers that already existed on user and experiment
         :param file object image_file: the scan file to upload
         :param bool import_service: whether to use the XNAT import service. True if file is a .zip, default False.
         :return: three-tuple of the xnat uris for subject, experiment, and scan

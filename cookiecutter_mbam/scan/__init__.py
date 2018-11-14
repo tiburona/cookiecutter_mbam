@@ -1,3 +1,3 @@
 from . import views
-from . import models
+from .models import Scan
 from . import service
