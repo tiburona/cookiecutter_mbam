@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Public section, including homepage and signup."""
 from flask import Blueprint, flash, redirect, render_template, request, url_for, session
-from flask_login import login_required, login_user, logout_user
+from flask_security import login_required, login_user, logout_user
 
 from cookiecutter_mbam.extensions import login_manager
 from cookiecutter_mbam.public.forms import LoginForm

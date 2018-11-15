@@ -22,3 +22,5 @@ CACHE_TYPE = 'simple'  # Can be "memcached", "redis", etc.
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 UPLOAD_FOLDER='/Users/katie/spiro/cookiecutter_mbam/files'
 WEBPACK_MANIFEST_PATH = 'webpack/manifest.json'
+SECURITY_PASSWORD_SALT = 'super-secret-random-salt' # erm, keep out of our repo in real prod version?
+

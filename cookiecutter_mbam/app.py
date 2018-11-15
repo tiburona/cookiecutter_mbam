@@ -6,7 +6,6 @@ from cookiecutter_mbam import commands, public, user, experiment, scan
 from cookiecutter_mbam.user import User, Role
 from cookiecutter_mbam.admin import UserAdmin, RoleAdmin
 from flask_security import SQLAlchemyUserDatastore
-from flask_admin.contrib.sqla import ModelView
 from cookiecutter_mbam.extensions import admin, bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate,\
     security, webpack
 from .hooks import create_test_users
@@ -19,11 +18,11 @@ def create_app(config_object='cookiecutter_mbam.settings'):
     app = Flask(__name__.split('.')[0])
     app.config.from_object(config_object)
     register_extensions(app)
-    register_admin_views()
     register_blueprints(app)
     register_errorhandlers(app)
     register_shellcontext(app)
     register_commands(app)
+    register_admin_views()
     return app
 
 
@@ -35,12 +34,12 @@ def register_extensions(app):
     csrf_protect.init_app(app)
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
     security.init_app(app, datastore=user_datastore)
-    admin.init_app(app)
     create_test_users(app, user_datastore, db)
     login_manager.init_app(app)
     debug_toolbar.init_app(app)
     migrate.init_app(app, db)
     webpack.init_app(app)
+    admin.init_app(app, endpoint='admin')
     return None
 
 
@@ -86,6 +85,6 @@ def register_commands(app):
 
 def register_admin_views():
     """Register Flask admin views"""
-    admin.add_view(ModelView(UserAdmin, db.session))
-    admin.add_view(ModelView(RoleAdmin, db.session))
+    admin.add_view(UserAdmin(User, db.session))
+    admin.add_view(RoleAdmin(Role, db.session))
 

@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """Scan model."""
 
-from sqlalchemy import event
-from cookiecutter_mbam.experiment import Experiment
-from cookiecutter_mbam.database import Column, Model, SurrogatePK, db, reference_col, relationship
+from cookiecutter_mbam.database import Model, SurrogatePK, db, reference_col, relationship
 
 class Scan(SurrogatePK, Model):
     """A user's scan."""
@@ -20,10 +18,3 @@ class Scan(SurrogatePK, Model):
     def __repr__(self):
         """Represent instance as a unique string."""
         return '<Scan({uri})>'.format(uri=self.xnat_uri)
-
-# def update_experiment_scan_count(mapper, connection, target):
-#     exp_id = target.experiment_id
-#     exp = Experiment.get_by_id(exp_id)
-#     exp.update({'num_scans', exp.num_scans + 1})
-#
-# event.listen(Scan, 'after_insert', update_experiment_scan_count)

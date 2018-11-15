@@ -4,19 +4,24 @@ import datetime as dt
 
 from flask_login import UserMixin
 
-from cookiecutter_mbam.database import Column, Model, SurrogatePK, db, reference_col, relationship
+from cookiecutter_mbam.database import Column, Model, Table, SurrogatePK, db
 from cookiecutter_mbam.extensions import bcrypt
 
-from sqlalchemy import event
 
+
+
+roles_users = Table(
+    'roles_users',
+    db.Column('user_id', db.Integer(), db.ForeignKey('users.id')),
+    db.Column('role_id', db.Integer(), db.ForeignKey('roles.id'))
+)
 
 class Role(SurrogatePK, Model):
     """A role for a user."""
 
     __tablename__ = 'roles'
     name = Column(db.String(80), unique=True, nullable=False)
-    user_id = reference_col('users', nullable=True)
-    user = relationship('User', backref='roles')
+    description = Column(db.String(255))
 
     def __init__(self, name, **kwargs):
         """Create instance."""
@@ -25,6 +30,7 @@ class Role(SurrogatePK, Model):
     def __repr__(self):
         """Represent instance as a unique string."""
         return '<Role({name})>'.format(name=self.name)
+
 
 
 class User(UserMixin, SurrogatePK, Model):
@@ -41,8 +47,12 @@ class User(UserMixin, SurrogatePK, Model):
     active = Column(db.Boolean(), default=False)
     is_admin = Column(db.Boolean(), default=False)
     xnat_subject_id = Column(db.String(80), nullable=True)
-    experiments = relationship('Experiment', backref='users')
     num_experiments = Column(db.Integer(), default=0)
+    roles = db.relationship(
+        'Role',
+        secondary=roles_users,
+        backref=db.backref('users', lazy='dynamic')
+    )
 
     def __init__(self, username, email, password=None, **kwargs):
         """Create instance."""
@@ -69,8 +79,3 @@ class User(UserMixin, SurrogatePK, Model):
         """Represent instance as a unique string."""
         return '<User({username!r})>'.format(username=self.username)
 
-
-@event.listens_for(User.experiments, 'append')
-def receive_append(target, value, initiator):
-    print("I was executed")
-    target.num_experiments += 1

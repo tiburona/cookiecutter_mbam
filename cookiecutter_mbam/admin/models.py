@@ -1,9 +1,8 @@
+# -*- coding: utf-8 -*-
+"""Models for the admin panel"""
 
-from flask_security import current_user, login_required, RoleMixin, Security, \
-    SQLAlchemyUserDatastore, UserMixin, utils
-
+from flask_security import current_user, utils
 from wtforms.fields import PasswordField
-
 from flask_admin.contrib import sqla
 
 # Customized User model for SQL-Admin

@@ -2,7 +2,6 @@
 """Scan views."""
 from flask import Blueprint, render_template, flash, redirect, url_for, session
 from flask_login import current_user
-from .models import Scan
 from .forms import ScanForm
 from .service import ScanService
 from cookiecutter_mbam.utils import flash_errors
